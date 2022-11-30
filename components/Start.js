@@ -22,7 +22,7 @@ const Start = (props) => {
         resizeMode="cover"
         style={styles.backgroundImage}>
 
-        <Text style={styles.appTitle}>App Title</Text>
+        <Text style={styles.appTitle}>CHATTIX</Text>
 
         <View className="controls-ui" style={styles.controlsUI}>
 
