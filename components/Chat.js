@@ -80,7 +80,7 @@ const Chat = (props) => {
         await firebase.auth().signInAnonymously();
       }
 
-      setUid(user.uid);
+      setUid(uid);
       setLoggedInText("Hello there");
 
       const authMessage = {
