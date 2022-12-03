@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
-  Test,
+  Text,
   View,
   Platform,
   KeyboardAvoidingView,
-  FlatList,
 } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 const firebase = require("firebase");
@@ -13,9 +12,11 @@ require("firebase/firestore");
 
 // COMPONENT
 const Chat = (props) => {
-  // STATE & PROPS
+  // STATE, PROPS, CONTEXT
   const { name, activeColor } = props.route.params;
   const [messages, setMessages] = useState([]);
+  const [uid, setUid] = useState([]);
+  const [loggedInText, setLoggedInText] = useState("Logging in...");
   const firebaseConfig = {
     apiKey: "AIzaSyD1kJ4i_DbJ4a1yNPf3zVA57M76ea6JXSs",
     authDomain: "chattix-8a492.firebaseapp.com",
@@ -25,11 +26,34 @@ const Chat = (props) => {
     appId: "1:420773651874:web:3d1c5f6737b1eb21e2befb",
   };
 
+  // Initialise Firebase
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const referenceChatMessages = firebase.firestore().collection("messages");
+
   // FUNCTION METHODS
-  const onSend = (messages = []) => {
-    setMessages((prevMessages) => GiftedChat.append(prevMessages, messages));
+  // Add messages to Firestore DB
+  const addMessages = (messages) => {
+    messages.forEach((message) => {
+      referenceChatMessages.add({
+        _id: message._id,
+        createdAt: message.createdAt,
+        text: message.text,
+        user: {
+          _id: message.user._id,
+        },
+      });
+    });
   };
 
+  // Updates local state and Firestore database on message sent
+  const onSend = (messages = []) => {
+    setMessages((prevMessages) => GiftedChat.append(prevMessages, messages));
+    addMessages(messages);
+  };
+
+  // Changes chat bubble styling
   const renderBubble = (props) => {
     return (
       <Bubble
@@ -44,27 +68,67 @@ const Chat = (props) => {
   };
 
   // LIFECYCLE
+  // Set header with custom name
   useEffect(() => {
-    props.navigation.setOptions({ title: name }); // Set header with name
+    props.navigation.setOptions({ title: name });
   }, [name]);
 
+  // Firebase Authentication
   useEffect(() => {
-    setMessages([ // Create initial state with system message
-      {
-        _id: 2,
-        text: `${name} has entered the chat`,
-        createdAt: new Date(),
-        system: true,
-      },
-    ]);
+    const authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) {
+        await firebase.auth().signInAnonymously();
+      }
 
-    if (!firebase.apps.length) { // Initialise Firebase
+      setUid(user.uid);
+      setLoggedInText("Hello there");
+
+      const authMessage = {
+        _id: "authMessage",
+        createdAt: new Date(),
+        text: `${loggedInText}. You are now logged in to Firestore.`,
+        system: true,
+        user: {
+          _id: "Firestore Authentication Service",
+        },
+      };
+
+      setMessages((prevMessages) =>
+        GiftedChat.append(prevMessages, authMessage)
+      );
+    });
+
+    return () => {
+      authUnsubscribe();
+    };
+  }, []);
+
+  // Firestore retrieve messages
+  useEffect(() => {
+    // Create initial state with system message
+    const entryMessage = {
+      _id: 2,
+      text: `${name || "You"} entered the chat`,
+      createdAt: new Date(),
+      system: true,
+    }
+
+    setMessages([entryMessage]);
+
+    // Initialise Firebase
+    if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
 
+    // Reference messages collection in Firestore
+    const referenceChatMessages = firebase.firestore().collection("messages"); 
+
     // FIREBASE METHODS
-    const onCollectionUpdate = (snapshot) => { // Set state with message data from Firestore
+
+    // Listen to Firestore
+    const onCollectionUpdate = (snapshot) => {
       let messagesList = [];
+
       snapshot.forEach((doc) => {
         let data = doc.data();
         messagesList.push({
@@ -80,13 +144,17 @@ const Chat = (props) => {
       });
       setMessages(messagesList);
     };
-    const referenceChatMessages = firebase.firestore().collection("messages"); // Reference messages collection in Firestore
-    const unsubscribe = referenceChatMessages.onSnapshot(onCollectionUpdate); // Create database listener & create unsubscribe function
+
+    // Create database listener & create unsubscribe function
+    const unsubscribe = referenceChatMessages
+      .orderBy("createdAt", "desc")
+      .onSnapshot(onCollectionUpdate); 
 
     return () => {
-      unsubscribe(); // Call the created unsubscribe function
+      // Unsubscribe from Firestore updates
+      unsubscribe(); 
     };
-  }, [name]);
+  }, []);
 
   // RENDER
   return (
@@ -108,6 +176,7 @@ const Chat = (props) => {
 
 export default Chat;
 
+// Styles
 const styles = StyleSheet.create({
   centeredContainer: {
     flex: 1,
