@@ -66,8 +66,13 @@ const Chat = (props) => {
   };
 
   const renderInputToolbar = (props) => {
-    if (isUserConnected == false) {
-    } else <InputToolbar {...props} />;
+    if (!isUserConnected) {
+    } else {
+      return (
+      <InputToolbar 
+      {...props} />
+      );
+    }
   };
 
   // Async Storage Methods
@@ -113,6 +118,11 @@ const Chat = (props) => {
       }
     });
   });
+
+  // Async Storage
+  useEffect(() => {
+    getMessages();
+  }, []);
 
   // Firebase Authentication
   useEffect(() => {
@@ -199,11 +209,6 @@ const Chat = (props) => {
       // Unsubscribe from Firestore updates
       unsubscribe();
     };
-  }, []);
-
-  // Async Storage
-  useEffect(() => {
-    getMessages();
   }, []);
 
   // RENDER
