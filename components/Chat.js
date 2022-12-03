@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Platform,
-  KeyboardAvoidingView,
-} from "react-native";
-import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import { StyleSheet, View, Platform, KeyboardAvoidingView } from "react-native";
+import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import NetInfo from "@react-native-community/netinfo";
 const firebase = require("firebase");
 require("firebase/firestore");
 
@@ -17,6 +13,7 @@ const Chat = (props) => {
   const [messages, setMessages] = useState([]);
   const [uid, setUid] = useState([]);
   const [loggedInText, setLoggedInText] = useState("Logging in...");
+  const [isUserConnected, setIsUserConnected] = useState(false);
   const firebaseConfig = {
     apiKey: "AIzaSyD1kJ4i_DbJ4a1yNPf3zVA57M76ea6JXSs",
     authDomain: "chattix-8a492.firebaseapp.com",
@@ -51,9 +48,10 @@ const Chat = (props) => {
   const onSend = (messages = []) => {
     setMessages((prevMessages) => GiftedChat.append(prevMessages, messages));
     addMessages(messages);
+    saveMessages();
   };
 
-  // Changes chat bubble styling
+  // GiftedChat elements styling
   const renderBubble = (props) => {
     return (
       <Bubble
@@ -67,40 +65,87 @@ const Chat = (props) => {
     );
   };
 
+  const renderInputToolbar = (props) => {
+    if (isUserConnected == false) {
+    } else <InputToolbar {...props} />;
+  };
+
+  // Async Storage Methods
+  const getMessages = async () => {
+    let messages = "";
+    try {
+      messages = (await AsyncStorage.getItem("messages")) || [];
+      setMessages(JSON.parse(messages));
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  const saveMessages = async () => {
+    try {
+      await AsyncStorage.setItem("messages", JSON.stringify(messages));
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  const deleteMessages = async () => {
+    // For Dev Use Only
+    try {
+      await AsyncStorage.removeItem("messages");
+      setMessages([]);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
   // LIFECYCLE
   // Set header with custom name
   useEffect(() => {
     props.navigation.setOptions({ title: name });
   }, [name]);
 
+  // Check if Online
+  useEffect(() => {
+    NetInfo.fetch().then((connection) => {
+      if (connection.isConnected) {
+        setIsUserConnected(true);
+      } else {
+        setIsUserConnected(false);
+      }
+    });
+  });
+
   // Firebase Authentication
   useEffect(() => {
-    const authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
-      if (!user) {
-        await firebase.auth().signInAnonymously();
-      }
+    if (isUserConnected) {
+      const authUnsubscribe = firebase
+        .auth()
+        .onAuthStateChanged(async (user) => {
+          if (!user) {
+            await firebase.auth().signInAnonymously();
+          }
 
-      setUid(user.uid);
-      setLoggedInText("Hello there");
+          setUid(uid);
+          setLoggedInText("Hello there");
 
-      const authMessage = {
-        _id: "authMessage",
-        createdAt: new Date(),
-        text: `${loggedInText}. You are now logged in to Firestore.`,
-        system: true,
-        user: {
-          _id: "Firestore Authentication Service",
-        },
+          const authMessage = {
+            _id: "authMessage",
+            createdAt: new Date(),
+            text: `${loggedInText}. You are now logged in to Firestore.`,
+            system: true,
+            user: {
+              _id: "Firestore Authentication Service",
+            },
+          };
+
+          setMessages((prevMessages) =>
+            GiftedChat.append(prevMessages, authMessage)
+          );
+        });
+
+      return () => {
+        authUnsubscribe();
       };
-
-      setMessages((prevMessages) =>
-        GiftedChat.append(prevMessages, authMessage)
-      );
-    });
-
-    return () => {
-      authUnsubscribe();
-    };
+    }
   }, []);
 
   // Firestore retrieve messages
@@ -111,7 +156,7 @@ const Chat = (props) => {
       text: `${name || "You"} entered the chat`,
       createdAt: new Date(),
       system: true,
-    }
+    };
 
     setMessages([entryMessage]);
 
@@ -121,7 +166,7 @@ const Chat = (props) => {
     }
 
     // Reference messages collection in Firestore
-    const referenceChatMessages = firebase.firestore().collection("messages"); 
+    const referenceChatMessages = firebase.firestore().collection("messages");
 
     // FIREBASE METHODS
 
@@ -148,12 +193,17 @@ const Chat = (props) => {
     // Create database listener & create unsubscribe function
     const unsubscribe = referenceChatMessages
       .orderBy("createdAt", "desc")
-      .onSnapshot(onCollectionUpdate); 
+      .onSnapshot(onCollectionUpdate);
 
     return () => {
       // Unsubscribe from Firestore updates
-      unsubscribe(); 
+      unsubscribe();
     };
+  }, []);
+
+  // Async Storage
+  useEffect(() => {
+    getMessages();
   }, []);
 
   // RENDER
@@ -162,6 +212,7 @@ const Chat = (props) => {
       <View style={styles.centeredContainer}>
         <GiftedChat
           renderBubble={renderBubble.bind(Chat)}
+          renderInputToolbar={renderInputToolbar.bind(Chat)}
           messages={messages}
           onSend={(messages) => onSend(messages)}
           user={{ _id: 1 }}
