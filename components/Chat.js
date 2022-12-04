@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Platform, KeyboardAvoidingView } from "react-native";
-import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
+import { GiftedChat, Bubble, CustomActions, InputToolbar } from "react-native-gifted-chat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 const firebase = require("firebase");
@@ -64,15 +64,14 @@ const Chat = (props) => {
       />
     );
   };
-
   const renderInputToolbar = (props) => {
     if (!isUserConnected) {
     } else {
-      return (
-      <InputToolbar 
-      {...props} />
-      );
+      return <InputToolbar {...props} />;
     }
+  };
+  const renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
   };
 
   // Async Storage Methods
@@ -217,7 +216,8 @@ const Chat = (props) => {
       <View style={styles.centeredContainer}>
         <GiftedChat
           renderBubble={renderBubble.bind(Chat)}
-          renderInputToolbar={renderInputToolbar.bind(Chat)}
+          renderInputToolbar={renderInputToolbar}
+          renderActions={renderCustomActions}
           messages={messages}
           onSend={(messages) => onSend(messages)}
           user={{ _id: 1 }}
