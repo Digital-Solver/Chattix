@@ -5,6 +5,8 @@ import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+import MapView from "react-native-maps";
+
 const firebase = require("firebase");
 require("firebase/firestore");
 
@@ -29,6 +31,7 @@ const Chat = (props) => {
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
+
   const referenceChatMessages = firebase.firestore().collection("messages");
 
   // FUNCTION METHODS
@@ -53,7 +56,7 @@ const Chat = (props) => {
     saveMessages();
   };
 
-  // GiftedChat elements styling
+  // GiftedChat components customisation
   const renderBubble = (props) => {
     return (
       <Bubble
@@ -74,6 +77,28 @@ const Chat = (props) => {
   };
   const renderCustomActions = (props) => {
     return <CustomActions {...props} />;
+  };
+  const renderCustomView = (props) => {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{
+            width: 150,
+            height: 100,
+            borderRadius: 13,
+            margin: 3,
+          }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
   };
 
   // Async Storage Methods
@@ -222,10 +247,11 @@ const Chat = (props) => {
           <GiftedChat
             renderBubble={renderBubble.bind(Chat)}
             renderInputToolbar={renderInputToolbar}
-            renderActions={renderCustomActions}
+            renderActions={renderCustomActions.bind(Chat)}
+            renderCustomView={renderCustomView}
             messages={messages}
             onSend={(messages) => onSend(messages)}
-            user={{ _id: 1 }}
+            user={{ _id: 1, avatar: "https://placeimg.com/140/140/any" }}
           />
           {Platform.OS === "android" ? (
             <KeyboardAvoidingView behvaiour="height" />
