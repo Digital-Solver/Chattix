@@ -1,19 +1,49 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useActionSheet } from "@expo/react-native-action-sheet";
-import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
+
+const firebase = require("firebase");
+require("firebase/firestore");
 
 // ***Component***
 const CustomActions = (props) => {
   // ***State, Props, and Context***
   const { wrapperStyle, iconTextStyle, onSend } = props;
-  const [image, setImage] = useState();
-  const [location, setLocation] = useState(null);
 
   // ***Methods***
+  // Firestore methods
+  const uploadImage = async (uri) => {
+    // Create a connection to the devices local storage
+    const blob = await new Promise((resolve, reject) => {
+      // XHR Objects used to interact with servers to retrieve data selectively
+      // XMLHttpRequest can be used to retrieve any type of data, not just XML
+      const xhr = new XMLHttpRequest();
+      xhr.onload = () => {
+        // On load, resolve the promise
+        resolve(xhr.response);
+      };
+      xhr.onerror = (error) => {
+        // On Error, reject the promise
+        console.log(error);
+        reject(new TypeError("Network request failed."));
+      };
+      xhr.responseType = "blob"; // Will change the response given to type "blob"
+      xhr.open("GET", uri, true); // Initialises the request, params: (method, url, async)
+      xhr.send(); // Sends the request
+    });
+
+    const imageNameBefore = uri.split("/");
+    const imageName = imageNameBefore[imageNameBefore.length - 1];
+
+    const ref = firebase.storage().ref().child(`images/${imageName}`); // Creates a reference/pointer to the particular document we want to manipulate
+    const snapshot = await ref.put(blob); // Send local data to that firebase reference using a PUT request
+    blob.close(); // close the connection
+    return await snapshot.ref.getDownloadURL(); // Return the download url
+  };
+
   // Custom Actions
   const chooseImage = async () => {
     const status = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -26,10 +56,11 @@ const CustomActions = (props) => {
 
         if (!result.canceled) {
           const imageURI = result.uri;
-          props.onSend({
+          const imageURL = await uploadImage(imageURI);
+          onSend({
             createdAt: new Date(),
             user: props.uid,
-            image: imageURI,
+            image: imageURL,
           });
         }
       }
@@ -48,10 +79,11 @@ const CustomActions = (props) => {
 
       if (!result.canceled) {
         const imageURI = result.uri;
-        props.onSend({
+        const imageURL = await uploadImage(imageURI);
+        onSend({
           createdAt: new Date(),
           user: props.uid,
-          image: imageURI,
+          image: imageURL,
         });
       }
     }
