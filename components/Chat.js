@@ -35,24 +35,43 @@ const Chat = (props) => {
   const referenceChatMessages = firebase.firestore().collection("messages");
 
   // FUNCTION METHODS
-  // Add messages to Firestore DB
-  const addMessages = (messages) => {
-    messages.forEach((message) => {
-      referenceChatMessages.add({
-        _id: message._id,
-        createdAt: message.createdAt,
-        text: message.text,
-        user: {
-          _id: message.user._id,
-        },
-      });
+
+  // Firestore methods
+  const addMessages = (message) => {
+    referenceChatMessages.add({
+      _id: message._id,
+      createdAt: message.createdAt,
+      text: message.text,
+      user: { _id: message.user._id },
+      image: message.image || null,
+      location: message.location || null,
     });
   };
+  const onCollectionUpdate = (snapshot) => {
+    let messagesList = [];
 
-  // Updates local state and Firestore database on message sent
+    snapshot.forEach((doc) => {
+      let data = doc.data();
+      messagesList.push({
+        _id: data._id,
+        text: data.text,
+        createdAt: data.createdAt.toDate(),
+        user: {
+          _id: data.user._id,
+          name: data.user.name,
+          avatar: data.user.avatar || "",
+        },
+        image: data.image || null,
+        location: data.location || null,
+      });
+    });
+    setMessages(messagesList);
+  };
+
+  // GiftedChat functionality
   const onSend = (messages = []) => {
     setMessages((prevMessages) => GiftedChat.append(prevMessages, messages));
-    addMessages(messages);
+    addMessages(messages[0]);
     saveMessages();
   };
 
@@ -203,28 +222,6 @@ const Chat = (props) => {
 
     // Reference messages collection in Firestore
     const referenceChatMessages = firebase.firestore().collection("messages");
-
-    // FIREBASE METHODS
-
-    // Listen to Firestore
-    const onCollectionUpdate = (snapshot) => {
-      let messagesList = [];
-
-      snapshot.forEach((doc) => {
-        let data = doc.data();
-        messagesList.push({
-          _id: data._id,
-          text: data.text,
-          createdAt: data.createdAt.toDate(),
-          user: {
-            _id: data.user._id,
-            name: data.user.name,
-            avatar: data.user.avatar || "",
-          },
-        });
-      });
-      setMessages(messagesList);
-    };
 
     // Create database listener & create unsubscribe function
     const unsubscribe = referenceChatMessages
