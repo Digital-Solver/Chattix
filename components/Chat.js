@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Platform, KeyboardAvoidingView } from "react-native";
-import { GiftedChat, Bubble, CustomActions, InputToolbar } from "react-native-gifted-chat";
+import CustomActions from "./CustomActions";
+import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 const firebase = require("firebase");
 require("firebase/firestore");
 
@@ -212,21 +214,25 @@ const Chat = (props) => {
 
   // RENDER
   return (
-    <View style={[styles.centeredContainer, { backgroundColor: activeColor }]}>
-      <View style={styles.centeredContainer}>
-        <GiftedChat
-          renderBubble={renderBubble.bind(Chat)}
-          renderInputToolbar={renderInputToolbar}
-          renderActions={renderCustomActions}
-          messages={messages}
-          onSend={(messages) => onSend(messages)}
-          user={{ _id: 1 }}
-        />
-        {Platform.OS === "android" ? (
-          <KeyboardAvoidingView behvaiour="height" />
-        ) : null}
+    <ActionSheetProvider>
+      <View
+        style={[styles.centeredContainer, { backgroundColor: activeColor }]}
+      >
+        <View style={styles.centeredContainer}>
+          <GiftedChat
+            renderBubble={renderBubble.bind(Chat)}
+            renderInputToolbar={renderInputToolbar}
+            renderActions={renderCustomActions}
+            messages={messages}
+            onSend={(messages) => onSend(messages)}
+            user={{ _id: 1 }}
+          />
+          {Platform.OS === "android" ? (
+            <KeyboardAvoidingView behvaiour="height" />
+          ) : null}
+        </View>
       </View>
-    </View>
+    </ActionSheetProvider>
   );
 };
 
