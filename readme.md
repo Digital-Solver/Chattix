@@ -13,13 +13,13 @@ This is a chat app similar to WhatsApp, Slack, Messenger, Telegram, etc. It is a
 - Chat Page: Talk to your friends and send photos or location
 
 ## Installation: How to use Chattix
-- Clone or download the repository
-- Install dependencies in root folder using `npm install`
-- Download Android Studio and set up an Android Virtual Device
-- Start the Android Emulator
-- In the root folder run `npm run start`
-- Allow Expo Go to be installed/updated on the emulator
-- Chat to your friends!
+1. Clone or download the repository
+2. Install dependencies in root folder using `npm install`
+3. Download Android Studio and set up an Android Virtual Device
+4. Start the Android Emulator
+5. In the root folder run `npm run start`
+6. Allow Expo Go to be installed/updated on the emulator
+7. Chat to your friends!
 
 ## UX: User Stories
 - As a new user, I want to be able to easily enter a chat room so I can quickly start talking to my friends and family.
