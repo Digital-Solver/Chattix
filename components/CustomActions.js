@@ -11,7 +11,7 @@ require("firebase/firestore");
 // ***Component***
 const CustomActions = (props) => {
   // ***State, Props, and Context***
-  const { wrapperStyle, iconTextStyle, onSend } = props;
+  const { wrapperStyle, iconTextStyle, onSend, uid } = props;
 
   // ***Methods***
   // Firestore methods
@@ -42,6 +42,7 @@ const CustomActions = (props) => {
     const snapshot = await ref.put(blob); // Send local data to that firebase reference using a PUT request
     blob.close(); // close the connection
     return await snapshot.ref.getDownloadURL(); // Return the download url
+    // TODO: use the downloadURL in the message being saved to the firebase database and the local Async storage too
   };
 
   // Custom Actions
@@ -57,11 +58,7 @@ const CustomActions = (props) => {
         if (!result.canceled) {
           const imageURI = result.uri;
           const imageURL = await uploadImage(imageURI);
-          onSend({
-            createdAt: new Date(),
-            user: props.uid,
-            image: imageURL,
-          });
+          onSend({ text: "", image: imageURL });
         }
       }
     } catch (error) {
@@ -80,11 +77,7 @@ const CustomActions = (props) => {
       if (!result.canceled) {
         const imageURI = result.uri;
         const imageURL = await uploadImage(imageURI);
-        onSend({
-          createdAt: new Date(),
-          user: props.uid,
-          image: imageURL,
-        });
+        onSend({ text: "", image: imageURL });
       }
     }
   };
@@ -95,9 +88,8 @@ const CustomActions = (props) => {
       let result = await Location.getCurrentPositionAsync({});
 
       if (!result.canceled) {
-        props.onSend({
-          createdAt: new Date(),
-          user: props.uid,
+        onSend({
+          text: "",
           location: {
             latitude: result.coords.latitude,
             longitude: result.coords.longitude,

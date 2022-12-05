@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Platform, KeyboardAvoidingView } from "react-native";
 import CustomActions from "./CustomActions";
-import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
+import {
+  GiftedChat,
+  Bubble,
+  InputToolbar,
+  Avatar,
+} from "react-native-gifted-chat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
@@ -42,7 +47,7 @@ const Chat = (props) => {
       _id: message._id,
       createdAt: message.createdAt,
       text: message.text,
-      user: { _id: message.user._id },
+      user: { _id: message.user._id, avatar: message.user.avatar },
       image: message.image || null,
       location: message.location || null,
     });
@@ -59,7 +64,7 @@ const Chat = (props) => {
         user: {
           _id: data.user._id,
           name: data.user.name,
-          avatar: data.user.avatar || "",
+          avatar: data.user.avatar || "https://placeimg.com/140/140/any",
         },
         image: data.image || null,
         location: data.location || null,
