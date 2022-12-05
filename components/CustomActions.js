@@ -11,7 +11,7 @@ require("firebase/firestore");
 // ***Component***
 const CustomActions = (props) => {
   // ***State, Props, and Context***
-  const { wrapperStyle, iconTextStyle, onSend, uid } = props;
+  const { wrapperStyle, iconTextStyle, onSend } = props;
 
   // ***Methods***
   // Firestore methods
