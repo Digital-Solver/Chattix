@@ -14,7 +14,7 @@ This is a chat app similar to WhatsApp, Slack, Messenger, Telegram, etc. It is a
 
 ## Installation: How to use Chattix
 - Clone or download the repository
-- Install dependencies using `npm install`
+- In the project's root folder, install dependencies using `npm install`
 - Download Android Studio and set up an Android Virtual Device
 - Start the Android Emulator
 - In the root repository run `npm run start`
