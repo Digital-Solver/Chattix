@@ -14,10 +14,10 @@ This is a chat app similar to WhatsApp, Slack, Messenger, Telegram, etc. It is a
 
 ## Installation: How to use Chattix
 - Clone or download the repository
-- In the project's root folder, install dependencies using `npm install`
+- Install dependencies in root folder using `npm install`
 - Download Android Studio and set up an Android Virtual Device
 - Start the Android Emulator
-- In the root repository run `npm run start`
+- In the root folder run `npm run start`
 - Allow Expo Go to be installed/updated on the emulator
 - Chat to your friends!
 
