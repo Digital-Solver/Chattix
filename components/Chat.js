@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Platform, KeyboardAvoidingView } from "react-native";
+import CustomActions from "./CustomActions";
 import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+import MapView from "react-native-maps";
+
 const firebase = require("firebase");
 require("firebase/firestore");
 
@@ -27,31 +31,51 @@ const Chat = (props) => {
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
+
   const referenceChatMessages = firebase.firestore().collection("messages");
 
   // FUNCTION METHODS
-  // Add messages to Firestore DB
-  const addMessages = (messages) => {
-    messages.forEach((message) => {
-      referenceChatMessages.add({
-        _id: message._id,
-        createdAt: message.createdAt,
-        text: message.text,
-        user: {
-          _id: message.user._id,
-        },
-      });
+
+  // Firestore methods
+  const addMessages = (message) => {
+    referenceChatMessages.add({
+      _id: message._id,
+      createdAt: message.createdAt,
+      text: message.text,
+      user: { _id: message.user._id, avatar: message.user.avatar },
+      image: message.image || null,
+      location: message.location || null,
     });
   };
+  const onCollectionUpdate = (snapshot) => {
+    let messagesList = [];
 
-  // Updates local state and Firestore database on message sent
+    snapshot.forEach((doc) => {
+      let data = doc.data();
+      messagesList.push({
+        _id: data._id,
+        text: data.text,
+        createdAt: data.createdAt.toDate(),
+        user: {
+          _id: data.user._id,
+          name: data.user.name,
+          avatar: data.user.avatar || "https://placeimg.com/140/140/any",
+        },
+        image: data.image || null,
+        location: data.location || null,
+      });
+    });
+    setMessages(messagesList);
+  };
+
+  // GiftedChat functionality
   const onSend = (messages = []) => {
     setMessages((prevMessages) => GiftedChat.append(prevMessages, messages));
-    addMessages(messages);
+    addMessages(messages[0]);
     saveMessages();
   };
 
-  // GiftedChat elements styling
+  // GiftedChat components customisation
   const renderBubble = (props) => {
     return (
       <Bubble
@@ -64,15 +88,36 @@ const Chat = (props) => {
       />
     );
   };
-
   const renderInputToolbar = (props) => {
     if (!isUserConnected) {
     } else {
+      return <InputToolbar {...props} />;
+    }
+  };
+  const renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
+  };
+  const renderCustomView = (props) => {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
       return (
-      <InputToolbar 
-      {...props} />
+        <MapView
+          style={{
+            width: 150,
+            height: 100,
+            borderRadius: 13,
+            margin: 3,
+          }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
       );
     }
+    return null;
   };
 
   // Async Storage Methods
@@ -178,28 +223,6 @@ const Chat = (props) => {
     // Reference messages collection in Firestore
     const referenceChatMessages = firebase.firestore().collection("messages");
 
-    // FIREBASE METHODS
-
-    // Listen to Firestore
-    const onCollectionUpdate = (snapshot) => {
-      let messagesList = [];
-
-      snapshot.forEach((doc) => {
-        let data = doc.data();
-        messagesList.push({
-          _id: data._id,
-          text: data.text,
-          createdAt: data.createdAt.toDate(),
-          user: {
-            _id: data.user._id,
-            name: data.user.name,
-            avatar: data.user.avatar || "",
-          },
-        });
-      });
-      setMessages(messagesList);
-    };
-
     // Create database listener & create unsubscribe function
     const unsubscribe = referenceChatMessages
       .orderBy("createdAt", "desc")
@@ -213,20 +236,26 @@ const Chat = (props) => {
 
   // RENDER
   return (
-    <View style={[styles.centeredContainer, { backgroundColor: activeColor }]}>
-      <View style={styles.centeredContainer}>
-        <GiftedChat
-          renderBubble={renderBubble.bind(Chat)}
-          renderInputToolbar={renderInputToolbar.bind(Chat)}
-          messages={messages}
-          onSend={(messages) => onSend(messages)}
-          user={{ _id: 1 }}
-        />
-        {Platform.OS === "android" ? (
-          <KeyboardAvoidingView behvaiour="height" />
-        ) : null}
+    <ActionSheetProvider>
+      <View
+        style={[styles.centeredContainer, { backgroundColor: activeColor }]}
+      >
+        <View style={styles.centeredContainer}>
+          <GiftedChat
+            renderBubble={renderBubble.bind(Chat)}
+            renderInputToolbar={renderInputToolbar}
+            renderActions={renderCustomActions.bind(Chat)}
+            renderCustomView={renderCustomView}
+            messages={messages}
+            onSend={(messages) => onSend(messages)}
+            user={{ _id: 1, avatar: "https://placeimg.com/140/140/any" }}
+          />
+          {Platform.OS === "android" ? (
+            <KeyboardAvoidingView behvaiour="height" />
+          ) : null}
+        </View>
       </View>
-    </View>
+    </ActionSheetProvider>
   );
 };
 
