@@ -10,16 +10,16 @@ One of the features that I am particularly proud of is the offline functionality
 
 Overall, working on the Chattix project was a fantastic learning opportunity for me. It allowed me to improve my skills in mobile development and cloud computing, and also allowed me to use my problem-solving and creative thinking skills. I am confident that this project will be a valuable addition to my portfolio and help me continue to grow as a developer.
 
-* [Features](https://github.com/Digital-Solver/hello-world/edit/main/readme.md#Features)
-* [Technologies](https://github.com/Digital-Solver/hello-world/edit/main/readme.md#Technologies)
-* [Installation](https://github.com/Digital-Solver/hello-world/edit/main/readme.md#Installation)
-* [Usage](https://github.com/Digital-Solver/hello-world/edit/main/readme.md#Usage)
-* [Configuration](https://github.com/Digital-Solver/hello-world/edit/main/readme.md#Configuration)
-* [Materials](https://github.com/Digital-Solver/hello-world/edit/main/readme.md#Materials)
-* [Contribution Guideilnes](https://github.com/Digital-Solver/hello-world/edit/main/readme.md#Contribution)
-* [License](https://github.com/Digital-Solver/hello-world/edit/main/readme.md#License)
-* [Contact](https://github.com/Digital-Solver/hello-world/edit/main/readme.md#Contact)
-* [Resources](https://github.com/Digital-Solver/hello-world/edit/main/readme.md#Resources)
+* [Features](https://github.com/Digital-Solver/Chattix/readme.md#Features)
+* [Technologies](https://github.com/Digital-Solver/Chattix/readme.md#Technologies)
+* [Installation](https://github.com/Digital-Solver/Chattix/readme.md#Installation)
+* [Usage](https://github.com/Digital-Solver/Chattix/readme.md#Usage)
+* [Configuration](https://github.com/Digital-Solver/Chattix/readme.md#Configuration)
+* [Materials](https://github.com/Digital-Solver/Chattix/readme.md#Materials)
+* [Contribution Guideilnes](https://github.com/Digital-Solver/Chattix/readme.md#Contribution)
+* [License](https://github.com/Digital-Solver/Chattix/readme.md#License)
+* [Contact](https://github.com/Digital-Solver/Chattix/readme.md#Contact)
+* [Resources](https://github.com/Digital-Solver/Chattix/readme.md#Resources)
 
 ## Features
 * Homepage: 
