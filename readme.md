@@ -8,18 +8,18 @@ Another challenge was ensuring that the app was compatible with both Android and
 
 One of the features that I am particularly proud of is the offline functionality. I wanted to make sure that users could still access their messages and send new ones, even if they didn't have an internet connection. To achieve this, I implemented local storage and syncing with the server once an internet connection was established. It was a great learning experience and I am happy with how the feature turned out.
 
-Overall, working on the Chattix project was a fantastic learning opportunity for me. It allowed me to improve my skills in mobile development and cloud computing, and also allowed me to use my problem-solving and creative thinking skills. I am confident that this project will be a valuable addition to my portfolio and help me continue to grow as a developer.
+Overall, working on the Chattix project was a fantastic learning opportunity for me. It allowed me to improve my skills in mobile development and cloud computing, and also allowed me to use my problem-solving and creative thinking skills. I am confident that this project is a valuable addition to my portfolio.
 
-* [Features](https://github.com/Digital-Solver/Chattix/readme.md#Features)
-* [Technologies](https://github.com/Digital-Solver/Chattix/readme.md#Technologies)
-* [Installation](https://github.com/Digital-Solver/Chattix/readme.md#Installation)
-* [Usage](https://github.com/Digital-Solver/Chattix/readme.md#Usage)
-* [Configuration](https://github.com/Digital-Solver/Chattix/readme.md#Configuration)
-* [Materials](https://github.com/Digital-Solver/Chattix/readme.md#Materials)
-* [Contribution Guideilnes](https://github.com/Digital-Solver/Chattix/readme.md#Contribution)
-* [License](https://github.com/Digital-Solver/Chattix/readme.md#License)
-* [Contact](https://github.com/Digital-Solver/Chattix/readme.md#Contact)
-* [Resources](https://github.com/Digital-Solver/Chattix/readme.md#Resources)
+* [Features](#features)
+* [Technologies](#technologies)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Configuration](#configuration)
+* [Materials](#materials)
+* [Contribution Guideilnes](#contribution)
+* [License](#license)
+* [Contact](#contact)
+* [Resources](#resources)
 
 ## Features
 * Homepage: 
@@ -48,7 +48,7 @@ Overall, working on the Chattix project was a fantastic learning opportunity for
 * Google Firebase authentication
 * Gifted Chat library
 
-## Installation: How to use Chattix
+## Installation
 
 1. Install the latest version of Node.js from the official website (https://nodejs.org/). Follow the prompts to complete the installation process.
 2. Install the Expo CLI by running the following command in your terminal: `npm install -g expo-cli`
@@ -89,7 +89,7 @@ To contribute to the project, follow these steps:
 4. Push the branch: git push origin new-feature
 5. Create a pull request
 
-## Licence
+## License
 This project is licensed under the [MIT Licence](https://opensource.org/licenses/MIT).
 
 ## Contact
