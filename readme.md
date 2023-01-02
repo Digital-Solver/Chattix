@@ -96,11 +96,7 @@ This project is licensed under the [MIT Licence](https://opensource.org/licenses
 If you have any questions or suggestions, feel free to contact the project maintainer at kerr(dot)digitalsolver@gmail.com .
 
 ## Resources
-[React Native Documentation](https://reactnative.dev/docs/getting-started)
-[Expo Documentation](https://docs.expo.io/)
-[Google Firestore Documentation](https://firebase.google.com/docs/firestore)
+[React Native Documentation](https://reactnative.dev/docs/getting-started) | 
+[Expo Documentation](https://docs.expo.io/) | 
+[Google Firestore Documentation](https://firebase.google.com/docs/firestore) | 
 [Gifted Chat Documentation](https://github.com/FaridSafi/react-native-gifted-chat)
-
-## Core Features: Why use this app
-- Homepage: Customise your chat with a name and background colour
-- Chat Page: Talk to your friends and send photos or location
