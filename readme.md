@@ -57,7 +57,7 @@ Overall, working on the Chattix project was a fantastic learning opportunity for
 5. Click on the `Create Virtual Device` button and select a device from the list.
 6. Choose a system image and follow the prompts to set up the AVD.
 7. Start the AVD by clicking on the `Play` button in the AVD Manager.
-8. Clone the repository: `git clone https://github.com/Digital-Solver/hello-world.git`
+8. Clone the repository: `git clone https://github.com/Digital-Solver/Chattix.git`
 9. Navigate to the project directory: `cd Chattix`
 10. Install the dependencies: `npm install`
 11. In the root folder, run `npm run start`
